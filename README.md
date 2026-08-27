@@ -11,7 +11,7 @@ Days 14–16 of a 30-day challenge, all three done.
 ```bash
 pip install -r requirements.txt
 python evaluate_main.py    # the beaconing false-positive finding
-pytest                     # 39 tests
+pytest                     # 48 tests
 ```
 
 ## The finding
@@ -142,9 +142,10 @@ netflow/
   tls.py         ClientHello parsing, JA3 + JA4-lite
   dns.py         DNS tunnelling detection (entropy + volume + churn)
   beaconing.py   periodicity detection via coefficient of variation
+  reassembly.py  TCP stream reassembly (out-of-order, retransmits, gaps)
   generate.py    synthetic traffic incl. benign-periodic (the hard part)
 evaluate_main.py the beaconing false-positive measurement
-tests/           39 tests
+tests/           48 tests
 ```
 
 ## What I'd do differently
@@ -153,16 +154,14 @@ The whole project points at one conclusion — timing alone cannot separate a
 tuned C2 beacon from NTP, you need destination reputation — and I treated that as
 a "known gap" at the end rather than the thesis. I'd lead with it: build the
 reputation/enrichment layer as a first-class input, not an afterthought, because
-the timing detector was never going to be the answer on its own. I'd also do real
-TCP stream reassembly rather than reading the first payload, since a ClientHello
-split across segments is exactly the kind of thing a real capture throws at you
-and my parser would miss it.
+the timing detector was never going to be the answer on its own. I've since added real TCP stream
+reassembly (out-of-order, retransmits, gaps), so a ClientHello split across
+segments now reassembles and parses — the parser no longer silently misses the
+large handshakes that split most often. The remaining gap is wiring reassembly
+into the live flow path so it runs on every connection, not just on demand.
 
 ## Known gaps
 
-- No TCP stream reassembly. Flows count packets and bytes but don't rebuild the
-  byte stream, so a ClientHello split across segments would be missed. Real tools
-  reassemble; this reads the first payload.
 - The registrable-domain grouping is last-two-labels, not the public suffix list,
   so it mis-groups `foo.co.uk`.
 - Beaconing uses coefficient of variation only. FFT / autocorrelation would catch
