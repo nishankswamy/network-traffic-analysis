@@ -1,5 +1,7 @@
 # Network Traffic Analysis
 
+[![tests](https://github.com/nishankswamy/network-traffic-analysis/actions/workflows/tests.yml/badge.svg)](https://github.com/nishankswamy/network-traffic-analysis/actions/workflows/tests.yml)
+
 Parse pcap by hand, reconstruct flows, fingerprint TLS clients (JA3/JA4), and
 detect DNS tunnelling and C2 beaconing — all defensive, all measured against the
 legitimate traffic that trips each detector up.
