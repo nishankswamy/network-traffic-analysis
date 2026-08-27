@@ -147,7 +147,14 @@ tests/           39 tests
 
 ## What I'd do differently
 
-<!-- Fill this in. -->
+The whole project points at one conclusion — timing alone cannot separate a
+tuned C2 beacon from NTP, you need destination reputation — and I treated that as
+a "known gap" at the end rather than the thesis. I'd lead with it: build the
+reputation/enrichment layer as a first-class input, not an afterthought, because
+the timing detector was never going to be the answer on its own. I'd also do real
+TCP stream reassembly rather than reading the first payload, since a ClientHello
+split across segments is exactly the kind of thing a real capture throws at you
+and my parser would miss it.
 
 ## Known gaps
 
